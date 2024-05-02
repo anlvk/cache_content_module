@@ -4,28 +4,53 @@ namespace Drupal\cache_content\Plugin\Block;
 
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 
 /**
- * Provides a block with a simple text.
+ * Provides a block which displays different content based on a loading time (if minute is even or odd).
  *
  * @Block(
  *   id = "cache_content_first_block",
  *   admin_label = @Translation("Cache content: first block"),
  * )
  */
-class CacheContentFirstBlock extends BlockBase {
+class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * Minute checker.
+   *
+   * @var \Drupal\cache_content\EvenMinuteChecker
+   */
+  protected $minuteChecker;
+
 
   /**
    * {@inheritdoc}
    */
-  public function build() {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = new static($configuration, $plugin_id, $plugin_definition);
+    $instance->minuteChecker = $container->get('cache_content.even_minute_check');
 
-    $isEvenMinute = \Drupal::service('cache_content.even_minute_check')->isEven();
+    return $instance;
+  }
 
+  /**
+   * Builds the content block.
+   *
+   * @return array
+   *   A render array.
+   */
+  public function build():array {
+
+    $isEvenMinute = $this->minuteChecker->isEven();
+
+    // Retrieve block configuration.
     $config = $this->getConfiguration();
 
+    // Display content based on a minute when a block is loaded.
     if ($isEvenMinute === true) {
       $message = $config['even_text'];
     } else {
@@ -41,9 +66,13 @@ class CacheContentFirstBlock extends BlockBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Undocumented function
+   *
+   * @param [type] $form
+   * @param FormStateInterface $form_state
+   * @return array
    */
-  public function blockForm($form, FormStateInterface $form_state) {
+  public function blockForm($form, FormStateInterface $form_state): array {
     $form = parent::blockForm($form, $form_state);
 
     // Retrieve existing configuration for this block.
@@ -65,15 +94,17 @@ class CacheContentFirstBlock extends BlockBase {
     return $form;
   }
 
-   /**
-   * {@inheritdoc}
+  /**
+   * Undocumented function
+   *
+   * @param [type] $form
+   * @param FormStateInterface $form_state
+   * @return void
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
-    // Save our custom settings when the form is submitted.
+    // Save custom settings when the form is submitted.
     $this->setConfigurationValue('even_text', $form_state->getValue('even_text'));
     $this->setConfigurationValue('odd_text', $form_state->getValue('odd_text'));
-    //$this->configuration['even_text'] = $form_state->getValue('even_text');
-    //$this->configuration['odd_text'] = $form_state->getValue('odd_text');
   }
 
 }

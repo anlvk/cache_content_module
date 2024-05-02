@@ -10,14 +10,16 @@ namespace Drupal\cache_content\Controller;
 use Drupal\Core\Controller\ControllerBase;
 
 /**
- * Объявляем наш класс-контроллер.
+ * Undocumented class
  */
 class CacheContentController extends ControllerBase {
 
   /**
-   * {@inheritdoc}
+   * Undocumented function
+   *
+   * @return void
    */
-  public function first_block() {
+  public function first_block(): array {
     $output = [
       '#title' => 'First Block title',
       '#markup' => 'First Block',
