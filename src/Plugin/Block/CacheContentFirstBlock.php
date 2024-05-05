@@ -2,12 +2,10 @@
 
 namespace Drupal\cache_content\Plugin\Block;
 
-
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
-
 
 /**
  * Provides a block which displays different content based on a loading time (if minute is even or odd).
@@ -20,17 +18,16 @@ use Drupal\Core\Form\FormStateInterface;
 class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Minute checker.
+   * Minute checker service.
    *
    * @var \Drupal\cache_content\EvenMinuteChecker
    */
   protected $minuteChecker;
 
-
   /**
-   * {@inheritdoc}
+   * @todo: add documentation.
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): object {
     $instance = new static($configuration, $plugin_id, $plugin_definition);
     $instance->minuteChecker = $container->get('cache_content.even_minute_check');
 
@@ -43,32 +40,25 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
    * @return array
    *   A render array.
    */
-  public function build():array {
-
-    $isEvenMinute = $this->minuteChecker->isEven();
+  public function build(): array {
+    $isEvenMinute = $this->minuteChecker->isCurrentMinuteEven();
 
     // Retrieve block configuration.
     $config = $this->getConfiguration();
 
     // Display content based on a minute when a block is loaded.
-    if ($isEvenMinute === true) {
-      $message = $config['even_text'];
-    } else {
-      $message = $config['odd_text'];
-    }
+    $message = ($isEvenMinute === true) ? $config['even_text'] : $config['odd_text'];
 
-    $block = [
+    return [
       '#type' => 'markup',
       '#markup' => $message,
     ];
-  
-    return $block;
   }
 
   /**
-   * Undocumented function
+   * Form constructor.
    *
-   * @param [type] $form
+   * @param array $form
    * @param FormStateInterface $form_state
    * @return array
    */
@@ -95,9 +85,9 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
   }
 
   /**
-   * Undocumented function
+   * Form submission handler.
    *
-   * @param [type] $form
+   * @param array $form
    * @param FormStateInterface $form_state
    * @return void
    */

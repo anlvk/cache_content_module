@@ -1,3 +1,4 @@
 services:
   cache_content.even_minute_check:
     class: Drupal\cache_content\EvenMinuteChecker
+    arguments: ['@datetime.time', '@date.formatter']

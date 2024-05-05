@@ -2,31 +2,49 @@
 
 namespace Drupal\cache_content;
 
+use \Drupal\Component\Datetime\TimeInterface;
+use \Drupal\Core\Datetime\DateFormatterInterface;
+
 /**
  * Class EvenMinuteChecker
  *
  * @package Drupal\cache_content
  */
 class EvenMinuteChecker {
-
-    private $currentMinute;
+    /**
+     * The time service.
+     *
+     * @var \Drupal\Component\Datetime\TimeInterface
+     */
+    protected TimeInterface $timeService;
 
     /**
-     * Undocumented function
+     * The date formatter service.
+     *
+     * @var \Drupal\Core\Datetime\DateFormatterInterface
      */
-    public function __construct() {
-        $this->currentMinute = date('i');
+    protected DateFormatterInterface $dateFormatter;
+
+    /**
+     * Class constructor.
+     */
+    public function __construct(TimeInterface $timeService, DateFormatterInterface $dateFormatter) {
+        $this->timeService = $timeService;
+        $this->dateFormatter = $dateFormatter;
     }
 
     /**
-     * Undocumented function
+     * Retrieves current timestamp and format this to retrieve a current minute (by custom format).
      *
      * @return boolean
      */
-    public function isEven() {
-        $minute = intval($this->currentMinute);
-        // true - even, false - odd
-        return $minute % 2 === 0 ? true : false ;
+    public function isCurrentMinuteEven(): bool {
+        // Retrieve current timestamp.
+        $currentTime = $this->timeService->getCurrentTime();
+        // Retrieve custom format: minute - from current timestamp.
+        $minute = $this->dateFormatter->format($currentTime, 'custom', 'i');
+        // True - even, false - odd.
+        return intval($minute) % 2 === 0 ? true : false ;
     }
 }
 
