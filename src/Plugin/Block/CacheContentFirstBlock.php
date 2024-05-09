@@ -53,14 +53,16 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
    *   A render array.
    */
   public function build(): array {
-    $isEvenMinute = $this->minuteChecker->isCurrentMinuteEven();
+    $is_even_minute = $this->minuteChecker->isCurrentMinuteEven();
 
     // Retrieve block configuration.
     $config = $this->getConfiguration();
 
     // Display content based on a minute when a block is loaded.
     // Random number is needed to demonstrate that cache context works.
-    $message = ($isEvenMinute === true) ? $config['even_text'] . ' ' . rand(1, 100) : $config['odd_text'] . ' ' . rand(1, 100);
+    $random_number = rand(1, 100);
+    $message = ($is_even_minute === true) ? $config['even_text'] : $config['odd_text'];
+    $message = "$message $random_number";
 
     return [
       '#type' => 'markup',
