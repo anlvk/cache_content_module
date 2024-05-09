@@ -1,11 +1,17 @@
 <?php
 
+/**
+ * @file
+ * Contains \Drupal\cache_content\Plugin\Block\CacheContentFirstBlock.
+ */
+
 namespace Drupal\cache_content\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Cache\Cache;
 
 /**
  * Provides a block which displays different content based on a loading time (if minute is even or odd).
@@ -18,18 +24,24 @@ use Drupal\Core\Form\FormStateInterface;
 class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Minute checker service.
+   * Odd/even minute service.
    *
    * @var \Drupal\cache_content\EvenMinuteChecker
    */
   protected $minuteChecker;
 
   /**
-   * @todo: add documentation.
+   * Instantiates a new instance of this class.
+   *
+   * @param ContainerInterface $container
+   * @param array $configuration
+   * @param [type] $plugin_id
+   * @param [type] $plugin_definition
+   * @return object
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): object {
     $instance = new static($configuration, $plugin_id, $plugin_definition);
-    $instance->minuteChecker = $container->get('cache_content.even_minute_check');
+    $instance->minuteChecker = $container->get('cache_content.odd_even_minute_check');
 
     return $instance;
   }
@@ -47,7 +59,8 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
     $config = $this->getConfiguration();
 
     // Display content based on a minute when a block is loaded.
-    $message = ($isEvenMinute === true) ? $config['even_text'] : $config['odd_text'];
+    // Random number is needed to demonstrate that cache context works.
+    $message = ($isEvenMinute === true) ? $config['even_text'] . ' ' . rand(1, 100) : $config['odd_text'] . ' ' . rand(1, 100);
 
     return [
       '#type' => 'markup',
@@ -95,6 +108,18 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
     // Save custom settings when the form is submitted.
     $this->setConfigurationValue('even_text', $form_state->getValue('even_text'));
     $this->setConfigurationValue('odd_text', $form_state->getValue('odd_text'));
+  }
+
+  /**
+   * The cache contexts.
+   *
+   * @return array
+   */
+  public function getCacheContexts(): array {
+    return Cache::mergeContexts(
+        parent::getCacheContexts(),
+        ['odd_even_minute']
+    );
   }
 
 }

@@ -1,0 +1,7 @@
+cache_content.settings:
+  path: '/admin/config/cache_content'
+  defaults:
+    _form: '\Drupal\cache_content\Form\CustomTextConfigForm'
+    _title: 'Cache content settings.'
+  requirements:
+    _permission: 'administer site configuration'

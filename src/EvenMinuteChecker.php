@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains \Drupal\cache_content\EvenMinuteChecker.
+ */
+
 namespace Drupal\cache_content;
 
 use \Drupal\Component\Datetime\TimeInterface;
@@ -27,6 +32,9 @@ class EvenMinuteChecker {
 
     /**
      * Class constructor.
+     *
+     * @param TimeInterface $timeService
+     * @param DateFormatterInterface $dateFormatter
      */
     public function __construct(TimeInterface $timeService, DateFormatterInterface $dateFormatter) {
         $this->timeService = $timeService;

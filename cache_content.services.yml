@@ -1,4 +1,9 @@
 services:
-  cache_content.even_minute_check:
+  cache_content.odd_even_minute_check:
     class: Drupal\cache_content\EvenMinuteChecker
     arguments: ['@datetime.time', '@date.formatter']
+  cache_context.odd_even_minute:
+    class: Drupal\cache_content\Cache\Context\OddEvenMinuteContext
+    arguments: ['@cache_content.odd_even_minute_check']
+    tags:
+      - { name: cache.context }
