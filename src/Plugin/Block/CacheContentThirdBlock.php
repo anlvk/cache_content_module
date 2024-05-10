@@ -65,7 +65,7 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
     $isEvenMinute = $this->minuteChecker->isCurrentMinuteEven();
 
     // Retrieve nodes from entity storage.
-    $nodes = $this->nodeStorage->loadMultiple([5, 5]);
+    $nodes = $this->nodeStorage->loadMultiple([5, 6]);
 
     $viewMode = 'teaser';
     $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
