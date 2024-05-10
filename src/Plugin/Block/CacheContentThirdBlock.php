@@ -21,20 +21,20 @@ use Drupal\Core\Cache\Cache;
  * )
  */
 class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPluginInterface {
-
   /**
    * Odd/even minute service.
-   *
-   * @var \Drupal\cache_content\EvenMinuteChecker
    */
   protected $minuteChecker;
 
   /**
-   * Entity type manager to load entites.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManager.php
+   * Entity type manager service.
    */
   protected $entityTypeManager;
+
+  /**
+   * Node storage.
+   */
+  protected $nodeStorage;
 
   /**
    * Instantiates a new instance of this class.
@@ -49,6 +49,7 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
     $instance = new static($configuration, $plugin_id, $plugin_definition);
     $instance->minuteChecker = $container->get('cache_content.odd_even_minute_check');
     $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->nodeStorage = $instance->entityTypeManager->getStorage('node');
 
     return $instance;
   }
@@ -61,23 +62,22 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
    */
   public function build(): array {
     // Check odd/even minute.
-    $is_even_minute = $this->minuteChecker->isCurrentMinuteEven();
+    $isEvenMinute = $this->minuteChecker->isCurrentMinuteEven();
 
     // Retrieve nodes from entity storage.
-    $view_mode = 'teaser';
-    $view_builder = $this->entityTypeManager->getViewBuilder('node');
-    $storage = $this->entityTypeManager->getStorage('node');
-    $nodes = $storage->loadMultiple([3, 4]);
+    $nodes = $this->nodeStorage->loadMultiple([5, 5]);
+
+    $viewMode = 'teaser';
+    $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
 
     if (empty($nodes)) {
       return [];
     }
 
     // Display content based on a minute when a block is loaded.
-    $node = ($is_even_minute === true) ? $nodes[3] : $nodes[4];
-    $message = $view_builder->view($node, $view_mode);
+    $node = ($isEvenMinute === true) ? $nodes[5] : $nodes[6];
 
-    return $message;
+    return $viewBuilder->view($node, $viewMode);
   }
 
   /**
@@ -90,6 +90,15 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
         parent::getCacheContexts(),
         ['odd_even_minute']
     );
+  }
+
+  /**
+   * The cache tags.
+   *
+   * @return array
+   */
+  public function getCacheTags(): array {
+    return parent::getCacheTags();
   }
 
 }
