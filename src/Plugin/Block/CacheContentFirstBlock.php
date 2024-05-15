@@ -1,20 +1,15 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\cache_content\Plugin\Block\CacheContentFirstBlock.
- */
-
 namespace Drupal\cache_content\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Cache\Cache;
 
 /**
- * Provides a block which displays different content based on a loading time (if minute is even or odd).
+ * Provides a block to display text depending on odd/even minute.
  *
  * @Block(
  *   id = "cache_content_first_block",
@@ -33,11 +28,7 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
   /**
    * Instantiates a new instance of this class.
    *
-   * @param ContainerInterface $container
-   * @param array $configuration
-   * @param [type] $plugin_id
-   * @param [type] $plugin_definition
-   * @return object
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): object {
     $instance = new static($configuration, $plugin_id, $plugin_definition);
@@ -61,7 +52,7 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
     // Display content based on a minute when a block is loaded.
     // Random number is needed to demonstrate that cache context works.
     $randomNumber = rand(1, 100);
-    $message = ($isEvenMinute === true) ? $config['even_text'] : $config['odd_text'];
+    $message = ($isEvenMinute === TRUE) ? $config['even_text'] : $config['odd_text'];
     $message = "$message $randomNumber";
 
     // The block is rendered with custom twig template.
@@ -74,9 +65,7 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
   /**
    * Form constructor.
    *
-   * @param array $form
-   * @param FormStateInterface $form_state
-   * @return array
+   * {@inheritdoc}
    */
   public function blockForm($form, FormStateInterface $form_state): array {
     $form = parent::blockForm($form, $form_state);
@@ -96,16 +85,14 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
       '#title' => $this->t('Odd text'),
       '#default_value' => isset($config['odd_text']) ? $config['odd_text'] : '',
     ];
-    
+
     return $form;
   }
 
   /**
    * Form submission handler.
    *
-   * @param array $form
-   * @param FormStateInterface $form_state
-   * @return void
+   * {@inheritdoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     // Save custom settings when the form is submitted.
@@ -115,8 +102,6 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
 
   /**
    * The cache contexts.
-   *
-   * @return array
    */
   public function getCacheContexts(): array {
     return Cache::mergeContexts(

@@ -1,19 +1,14 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\cache_content\Plugin\Block\CacheContentThirdBlock.
- */
-
 namespace Drupal\cache_content\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Cache\Cache;
 
 /**
- * Provides a block which displays different nodes based on a loading time (if minute is even or odd).
+ * Provides a block to display text from module configuration settings.
  *
  * @Block(
  *   id = "cache_content_third_block",
@@ -37,13 +32,14 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
   protected $nodeStorage;
 
   /**
+   * Node ID.
+   */
+  protected $nodeID;
+
+  /**
    * Instantiates a new instance of this class.
    *
-   * @param ContainerInterface $container
-   * @param array $configuration
-   * @param [type] $plugin_id
-   * @param [type] $plugin_definition
-   * @return object
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): object {
     $instance = new static($configuration, $plugin_id, $plugin_definition);
@@ -63,11 +59,12 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
   public function build(): array {
     // Check odd/even minute.
     $isEvenMinute = $this->minuteChecker->isCurrentMinuteEven();
+    $this->nodeID = ($isEvenMinute === TRUE) ? 5 : 6;
 
-    // Retrieve nodes from entity storage.
-    $nodes = $this->nodeStorage->loadMultiple([5, 6]);
+    // Retrieve the node from entity storage.
+    $node = $this->nodeStorage->load($this->nodeID);
 
-    if (empty($nodes)) {
+    if (empty($node)) {
       return [];
     }
 
@@ -75,7 +72,6 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
     $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
 
     // Display content based on a minute when a block is loaded.
-    $node = ($isEvenMinute === true) ? $nodes[5] : $nodes[6];
     $nodeView = $viewBuilder->view($node, $viewMode);
 
     // The block is rendered with custom twig template.
@@ -87,9 +83,7 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
   }
 
   /**
-   * The cache contexts.
-   *
-   * @return array
+   * The cache contexts. Merged with custom cache context.
    */
   public function getCacheContexts(): array {
     return Cache::mergeContexts(
@@ -99,13 +93,13 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
   }
 
   /**
-   * The cache tags.
-   *
-   * @return array
+   * The cache tags. Merged with node tags.
    */
-  public function getCacheTags(): array {
-    return parent::getCacheTags();
+  public function getCacheTags() {
+    return Cache::mergeTags(
+      parent::getCacheTags(),
+      ['node:' . $this->nodeID]
+    );
   }
 
 }
-

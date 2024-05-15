@@ -1,34 +1,35 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\cache_content\Cache\Context\OddEvenMinuteContext.
- */
-
 namespace Drupal\cache_content\Cache\Context;
 
-use Drupal\Core\Cache\Context\CacheContextInterface;
-use Drupal\Core\Cache\CacheableMetadata;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\cache_content\EvenMinuteChecker;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Cache\Context\CacheContextInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Implements custom cache context.
+ *
+ * @see \Drupal\Core\Form\ConfigFormBase
+ */
 class OddEvenMinuteContext implements CacheContextInterface {
   /**
    * Class constructor.
    *
-   * @param EvenMinuteChecker $minuteChecker
+   * @param \Drupal\cache_content\EvenMinuteChecker $minuteChecker
+   *   The odd/even minute check service.
    */
   public function __construct(
     protected EvenMinuteChecker $minuteChecker,
-    ) {
+  ) {
     $this->minuteChecker = $minuteChecker;
   }
 
   /**
    * Instantiates a new instance of this class.
    *
-   * @param ContainerInterface $container
-   * @return object
+   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+   *   Provides Drupal service container.
    */
   public static function create(ContainerInterface $container): object {
     return new static(
@@ -38,8 +39,6 @@ class OddEvenMinuteContext implements CacheContextInterface {
 
   /**
    * Returns the label of the cache context.
-   *
-   * @return string
    */
   public static function getLabel(): string {
     return t('Odd/even minute context');
@@ -47,20 +46,16 @@ class OddEvenMinuteContext implements CacheContextInterface {
 
   /**
    * Returns the string representation of the cache context.
-   *
-   * @return string
    */
   public function getContext(): string {
     $isEvenMinute = $this->minuteChecker->isCurrentMinuteEven();
-    $result = ($isEvenMinute === true) ? 'even' : 'odd';
+    $result = ($isEvenMinute === TRUE) ? 'even' : 'odd';
 
     return $result;
   }
 
   /**
    * Returns the cacheability metadata for this response.
-   *
-   * @return object
    */
   public function getCacheableMetadata(): object {
     return new CacheableMetadata();
