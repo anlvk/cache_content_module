@@ -64,9 +64,10 @@ class CacheContentFirstBlock extends BlockBase implements ContainerFactoryPlugin
     $message = ($isEvenMinute === true) ? $config['even_text'] : $config['odd_text'];
     $message = "$message $randomNumber";
 
+    // The block is rendered with custom twig template.
     return [
-      '#type' => 'markup',
-      '#markup' => $message,
+      '#theme' => 'block--first-block',
+      '#block_text' => $message,
     ];
   }
 

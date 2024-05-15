@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function cache_content_theme($existing, $type, $theme, $path) {
+  return [
+    'block--first-block' => [
+      'variables' => [
+        'block_text' => NULL,
+      ],
+    ],
+    'block--second-block' => [
+      'variables' => [
+        'block_text' => NULL,
+      ],
+    ],
+    'block--third-block' => [
+      'variables' => [
+        'node' => NULL,
+      ],
+    ],
+  ];
+}

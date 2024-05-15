@@ -55,9 +55,10 @@ class CacheContentSecondBlock extends BlockBase implements ContainerFactoryPlugi
     // Display content based on a minute when a block is loaded.
     $message = $config_factory->get('config_text');
 
+    // The block is rendered with custom twig template.
     return [
-      '#type' => 'markup',
-      '#markup' => $message,
+      '#theme' => 'block--second-block',
+      '#block_text' => $message,
     ];
   }
 

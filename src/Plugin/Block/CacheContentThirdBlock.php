@@ -67,17 +67,23 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
     // Retrieve nodes from entity storage.
     $nodes = $this->nodeStorage->loadMultiple([5, 6]);
 
-    $viewMode = 'teaser';
-    $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
-
     if (empty($nodes)) {
       return [];
     }
 
+    $viewMode = 'teaser';
+    $viewBuilder = $this->entityTypeManager->getViewBuilder('node');
+
     // Display content based on a minute when a block is loaded.
     $node = ($isEvenMinute === true) ? $nodes[5] : $nodes[6];
+    $nodeView = $viewBuilder->view($node, $viewMode);
 
-    return $viewBuilder->view($node, $viewMode);
+    // The block is rendered with custom twig template.
+    return [
+      '#theme' => 'block--third-block',
+      '#node' => $nodeView,
+    ];
+
   }
 
   /**
