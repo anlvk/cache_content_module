@@ -4,4 +4,4 @@ cache_content.settings:
     _form: '\Drupal\cache_content\Form\CustomTextConfigForm'
     _title: 'Cache content settings.'
   requirements:
-    _permission: 'administer site configuration'
+    _cache_content_config_access_check: 'TRUE'

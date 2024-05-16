@@ -59,10 +59,10 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
   public function build(): array {
     // Check odd/even minute.
     $isEvenMinute = $this->minuteChecker->isCurrentMinuteEven();
-    $this->nodeID = ($isEvenMinute === TRUE) ? 5 : 6;
+    $nodeID = ($isEvenMinute === TRUE) ? 5 : 6;
 
     // Retrieve the node from entity storage.
-    $node = $this->nodeStorage->load($this->nodeID);
+    $node = $this->nodeStorage->load($nodeID);
 
     if (empty($node)) {
       return [];
@@ -98,7 +98,7 @@ class CacheContentThirdBlock extends BlockBase implements ContainerFactoryPlugin
   public function getCacheTags() {
     return Cache::mergeTags(
       parent::getCacheTags(),
-      ['node:' . $this->nodeID]
+      ['node:list']
     );
   }
 

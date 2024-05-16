@@ -37,7 +37,7 @@ class EvenMinuteChecker {
     $currentTime = $this->timeService->getCurrentTime();
     // Retrieve custom format: minute - from current timestamp.
     $minute = $this->dateFormatter->format($currentTime, 'custom', 'i');
-    // True - even, false - odd.
+
     return intval($minute) % 2 === 0 ? TRUE : FALSE;
   }
 
