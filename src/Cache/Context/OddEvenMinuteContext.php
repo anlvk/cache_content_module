@@ -8,7 +8,7 @@ use Drupal\Core\Cache\Context\CacheContextInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Implements custom cache context.
+ * Cache context ID: 'odd_even_minute'.
  *
  * @see \Drupal\Core\Form\ConfigFormBase
  */
