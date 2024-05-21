@@ -1,0 +1,14 @@
+services:
+  cache_content.odd_even_minute_check:
+    class: Drupal\cache_content\EvenMinuteChecker
+    arguments: ['@datetime.time', '@date.formatter']
+  cache_context.odd_even_minute:
+    class: Drupal\cache_content\Cache\Context\OddEvenMinuteContext
+    arguments: ['@cache_content.odd_even_minute_check']
+    tags:
+      - { name: cache.context }
+  cache_content.access_checker:
+    class: Drupal\cache_content\Access\ConfigAccessCheck
+    arguments: ['@cache_content.odd_even_minute_check']
+    tags:
+      - { name: access_check, applies_to: _cache_content_config_access_check }
